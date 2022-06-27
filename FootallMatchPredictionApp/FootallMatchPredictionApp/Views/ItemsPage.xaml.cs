@@ -26,6 +26,7 @@ namespace FootallMatchPredictionApp.Views
         protected override void OnAppearing()
         {
             base.OnAppearing();
+            App.Database.RefreshFixturesAsync();
             _viewModel.OnAppearing();
         }
     }

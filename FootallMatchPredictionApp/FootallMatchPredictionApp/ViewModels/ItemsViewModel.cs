@@ -14,6 +14,7 @@ namespace FootallMatchPredictionApp.ViewModels
 
         public ObservableCollection<Item> Items { get; }
         public Command LoadItemsCommand { get; }
+        public Command FetchFixturesCommand { get; }
         public Command AddItemCommand { get; }
         public Command<Item> ItemTapped { get; }
         public ObservableCollection<Fixture> Fixtures {get;}
@@ -23,10 +24,36 @@ namespace FootallMatchPredictionApp.ViewModels
             Title = "Browse";
             Items = new ObservableCollection<Item>();
             LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());
+            FetchFixturesCommand = new Command(async () => await ExecuteLoadItemsCommand());
 
             ItemTapped = new Command<Item>(OnItemSelected);
 
             AddItemCommand = new Command(OnAddItem);
+        }
+
+        async Task ExecuteFetchFixturesCommand()
+        {
+            IsBusy = true;
+
+            try
+            {
+                Fixtures.Clear();
+                var fixtures = await FixtureDataStore.GetFixturesAsync(true);
+                foreach(var fixture in fixtures)
+                {
+                    Fixtures.Add(fixture);
+                }
+            }
+
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         async Task ExecuteLoadItemsCommand()
